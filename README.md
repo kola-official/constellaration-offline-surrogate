@@ -174,6 +174,74 @@ input contracts and responsibilities are listed in
 - **Sparse-feedback extension:** batched VMEC++ audits, label acquisition, and
   surrogate retraining across active-learning rounds.
 
+## Relation to ConStellaration and the official leaderboard
+
+This repository builds on the official ConStellaration ecosystem rather than
+replacing it:
+
+| Resource | Role in this project |
+|---|---|
+| [Dataset](https://huggingface.co/datasets/proxima-fusion/constellaration) | Offline training and diagnostic source |
+| [Code / forward model](https://github.com/proximafusion/constellaration) | Problem definition, scoring, and VMEC++ audit entry points |
+| [Design leaderboard](https://huggingface.co/spaces/proxima-fusion/constellaration-bench) | Public ranking of audited Problem 2 boundaries and scores |
+| Paper ALM-NGOpt baseline | External online-physics reference for Problem 2 |
+
+How the pieces connect:
+
+- **Official evaluation is authoritative.** Feasibility and score are defined by
+  the ConStellaration forward model. Surrogate outputs are predictions only;
+  VMEC++ / official evaluator outputs are audited physics quantities.
+- **Leaderboard entries establish the final audited boundary and score.** The
+  public table does not disclose each submitter’s candidate-generation history
+  or the number of VMEC++ calls used during search. This project therefore does
+  not reconstruct or rank against private search trajectories.
+- **Paper ALM-NGOpt is an online baseline.** It optimizes with repeated physics
+  evaluations in the loop and reports a feasible Problem 2 score under a large
+  compute budget. This repository studies a different protocol: offline
+  surrogate search plus a **fixed local audit budget**. The two settings are not
+  equal-budget comparisons.
+- **What this project adds.** Quantitative diagnostics of surrogate validity
+  boundaries, constraint floors, trust-region collapse, and random-prescreen
+  controls under zero official-feasible training labels in the used Nfp=3
+  subset. The main product is method-level evidence about when offline
+  surrogate ranking is reliable, not a claim of a new top leaderboard entry.
+
+In short: the leaderboard answers “what audited boundary scores best under the
+official metric?”; this repository answers “what can a fixed-budget offline
+surrogate pipeline learn and fail to learn from the published data alone?”
+
+## Future directions
+
+Priority extensions follow the technical report and keep evaluation rules
+unchanged (official score vs. cumulative high-fidelity calls):
+
+1. **Sparse-feedback / hybrid active learning.** Use the surrogate only to
+   propose batches; audit with VMEC++; add labels; retrain; plot best official
+   score against cumulative physics calls. This is hybrid work, not pure offline
+   search.
+2. **Feasible-side or near-feasible-side data acquisition.** The current gap is
+   coverage of official-feasible or near-feasible labels, not merely larger
+   model capacity on the existing infeasible-heavy pool.
+3. **Richer scoring with intermediate physics.** Keep Fourier coefficients as
+   inference input, but use wout-derived or multi-metric heads as filters for
+   VMEC stability / conservative ranking rather than as sole optimization
+   objectives.
+4. **Cross-domain transfer with careful label alignment.** Cross-Nfp
+   pretraining already helps supervised metrics; broader transfer (e.g. related
+   QA/QH corpora) must preserve Problem 2 vacuum definitions and official
+   scoring.
+5. **Boundary representation research.** Near-axis expansions, learned latent
+   boundaries, or spectral-band decompositions may reshape the feasible set and
+   are intentionally out of scope for this release.
+6. **Engineering consolidation.** Shared package extraction, stronger unit
+   tests (feature order, constraint normalization, boundary round-trip, audit
+   budget accounting), and clean-environment smoke runs.
+
+Details and evidence for completed stages versus open directions are in the
+Chinese report
+([`presentations/advisor_report/report_cn.md`](presentations/advisor_report/report_cn.md),
+Section 7) and [`docs/METHODOLOGY.md`](docs/METHODOLOGY.md).
+
 ## Reproducibility rules
 
 1. Record the upstream ConStellaration commit and environment versions.
