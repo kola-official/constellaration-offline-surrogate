@@ -1,0 +1,29 @@
+run_id: quick_stage2_seed0
+mode: quick_stage2
+seed: 0
+audit_budget_per_method: 10
+vmec_workers: 8
+hardware:
+  cpu_workers: 8
+  dataloader_workers: 0
+  torch_num_threads: 4
+  gpu_devices: [0, 1]
+  parallel_ensemble: true
+candidates:
+  per_method_pool: 200
+  cmaes_budget: 3000
+  batch_size: 4096
+  e2_latent_components: 20
+  e3_latent_components: 10
+  spectral_threshold_quantile: 0.995
+  spectral_threshold_multiplier: 1.25
+  diversity_fraction: 0.25
+  feasibility:
+    alpha_l: 0.25
+    lambda_max_violation: 80.0
+    lambda_qi: 40.0
+    lambda_infeasible: 2.0
+    lambda_uncertainty: 2.0
+    lambda_support: 2.0
+    lambda_geometry: 8.0
+    near_feasible_bonus_threshold: 0.05

@@ -1,0 +1,38 @@
+run_id: standard_seed0
+mode: standard
+seed: 0
+audit_budget_per_method: 25
+vmec_workers: 8
+hardware:
+  cpu_workers: 16
+  dataloader_workers: 0
+  torch_num_threads: 4
+  gpu_devices: [0, 1]
+  parallel_ensemble: true
+data:
+  label_mode: default_all
+  auxiliary_label_min_finite_fraction: 0.98
+  max_rows:
+  optimization_validation_max_rows: 10000
+  test_size: 0.15
+  validation_size: 0.15
+surrogate:
+  regression_labels: auto
+  problem2_label_weight: 1.0
+  auxiliary_label_weight: 0.25
+  label_weights:
+    log10_qi: 2.0
+  ensemble_members: 6
+  width: 384
+  blocks: 4
+  dropout: 0.05
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  batch_size: 4096
+  max_epochs: 150
+  patience: 20
+candidates:
+  per_method_pool: 500
+  relaxed_gmm_samples: 10000
+  cmaes_budget: 12000
+  batch_size: 8192

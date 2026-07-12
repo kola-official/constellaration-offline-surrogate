@@ -1,0 +1,41 @@
+cff-version: 1.2.0
+message: "If you use this repository, cite this software and the ConStellaration benchmark paper."
+title: "Offline Surrogate-Guided Search for ConStellaration Problem 2"
+type: software
+version: 0.1.0
+date-released: 2026-07-12
+license: MIT
+url: "https://github.com/kola-official/constellaration-offline-surrogate"
+repository-code: "https://github.com/kola-official/constellaration-offline-surrogate"
+authors:
+  - family-names: "Liu"
+    given-names: "Shengnian"
+references:
+  - type: conference-paper
+    title: "ConStellaration: A dataset of QI-like stellarator plasma boundaries and optimization benchmarks"
+    authors:
+      - family-names: Cadena
+        given-names: Santiago A.
+      - family-names: Merlo
+        given-names: Andrea
+      - family-names: Laude
+        given-names: Emanuel
+      - family-names: Bauer
+        given-names: Alexander
+      - family-names: Agrawal
+        given-names: Atul
+      - family-names: Pascu
+        given-names: Maria
+      - family-names: Savtchouk
+        given-names: Marija
+      - family-names: Bonauer
+        given-names: Lukas
+      - family-names: Guiraud
+        given-names: Enrico
+      - family-names: Hudson
+        given-names: Stuart R.
+      - family-names: Kaiser
+        given-names: Markus
+    year: 2025
+    conference: "NeurIPS 2025 Datasets and Benchmarks Track"
+    url: "https://openreview.net/forum?id=NQSbGKlCpx"

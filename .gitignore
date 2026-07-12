@@ -1,0 +1,89 @@
+# OS and editor files
+.DS_Store
+**/.DS_Store
+.vscode/
+.idea/
+*.swp
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.venv/
+venv/
+.env
+.env.*
+
+# Generated experiment artifacts kept outside the public repository
+**/outputs/
+**/outputs_stage2/
+**/outputs_stage3/
+**/outputs_stage4/
+**/outputs_wout24/
+**/outputs_cross_nfp/
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*.pkl
+*.pickle
+*.joblib
+*.npy
+*.parquet
+*.npz
+*.log
+*.pid
+*.done
+*.tar.gz
+*.zip
+
+# Generated presentation artifacts kept local
+presentations/advisor_report/assets/
+presentations/advisor_report/rendered/
+presentations/advisor_report/qa_report.md
+presentations/advisor_report/asset_manifest.md
+presentations/advisor_report/build_advisor_report.py
+*.pptx
+
+# Internal planning and source copies not intended for redistribution
+plan/
+constellaration.md
+要求.md
+面试题目_仿星器设计.docx
+
+# Curated public report/HTML/figures are allowlisted below; other results stay local
+tables/
+results/
+
+figures/**
+!figures/final-negative-result/
+!figures/final-negative-result/fig1_surrogate_validity_boundary.png
+!figures/final-negative-result/fig2_constraint_floor_positive_violation.png
+!figures/scheme-comparison/
+!figures/scheme-comparison/fig3_model_scheme_comparison.png
+
+presentations/**
+!presentations/advisor_report/
+!presentations/advisor_report/report_cn.md
+!presentations/advisor_report/advisor_report_deck.html
+!presentations/advisor_report/advisor_report_deck.css
+!presentations/advisor_report/vendor/
+!presentations/advisor_report/vendor/html-ppt/
+!presentations/advisor_report/vendor/html-ppt/**
+# Local screening dumps (historical machine-named folder and generic outputs)
+experiments/hf_config_screening/rtx3090_outputs/
+experiments/hf_config_screening/outputs/
+*.sha256
+
+# Dataset rows, candidate records, and serialized experiment results remain local
+*.csv
+*.json
+*.jsonl
+*.parquet
+*.arrow
+*.feather
+*.nc
+*.h5
+*.hdf5

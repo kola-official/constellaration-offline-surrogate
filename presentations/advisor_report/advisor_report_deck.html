@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI 驱动的仿星器位形优化 · 结题汇报</title>
+  <link rel="stylesheet" href="vendor/html-ppt/fonts.css">
+  <link rel="stylesheet" href="vendor/html-ppt/base.css">
+  <link rel="stylesheet" href="vendor/html-ppt/animations.css">
+  <link rel="stylesheet" href="vendor/html-ppt/course-module.css">
+  <link rel="stylesheet" href="advisor_report_deck.css">
+</head>
+<body class="tpl-course-module advisor-deck">
+<div class="deck">
+  <div class="deck-header">
+    <span>ConStellaration Problem 2 · Offline Surrogate Audit</span>
+    <span>Course-module template</span>
+  </div>
+  <div class="deck-footer">
+    <span>AI 驱动的仿星器位形优化</span>
+    <span class="slide-number"></span>
+  </div>
+
+  <section class="slide full is-active" data-title="Cover">
+    <div class="cover-inner">
+      <p class="kicker">结题汇报</p>
+      <h1 class="h1 mt-s">AI 驱动的仿星器位形优化：从离线代理模型到可信边界诊断</h1>
+      <p class="lede mt-m">本项目通过固定预算 VMEC++ 审计刻画了离线代理的可信边界，并量化了缺乏官方可行侧数据时的跨线困难。</p>
+      <div class="row wrap mt-l" style="gap:10px">
+        <span class="pill-academic">80 维硬约束黑盒优化</span>
+        <span class="pill-academic">MLP ensemble surrogate</span>
+        <span class="pill-academic">VMEC++ final audit</span>
+        <span class="pill-academic">0 official feasible samples</span>
+      </div>
+    </div>
+    <div class="notes">开场先把主线定住：本报告完成离线代理闭环，并量化失败机制。背景只点到 Problem 2 的难点，重点放在四阶段实验和后续增量方案。</div>
+  </section>
+
+  <section class="slide" data-title="Condensed Story">
+    <aside class="sidebar">
+      <div class="brand">Fusion Report</div>
+      <h5>Deck map</h5>
+      <ul class="obj-list">
+        <li class="current">总览</li>
+        <li>问题与闭环</li>
+        <li>四阶段实验</li>
+        <li>增量方案</li>
+        <li>结论与后续</li>
+      </ul>
+      <h5>Current</h5>
+      <p class="dim" style="font-size:13px">压缩叙事 · 3 个判断</p>
+    </aside>
+    <div class="main report-main">
+      <p class="kicker">浓缩后的展示主线</p>
+      <h2 class="h2 mt-s">固定离线代理闭环量化了清楚的失败机制。</h2>
+      <div class="three-modes">
+        <div class="mode-card">
+          <span class="index">1</span>
+          <h3>模型具备分布内预测能力</h3>
+          <p>在已有数据分布内，代理能够预测目标和约束；真正的问题出现在搜索离开数据支撑区域之后。</p>
+        </div>
+        <div class="mode-card">
+          <span class="index">2</span>
+          <h3>优化器会利用乐观误差</h3>
+          <p>当目标函数强行压低约束违反量时，搜索会跑到代理低估 log10(qi) gap 的区域，真实 VMEC++ 结果反而更差。</p>
+        </div>
+        <div class="mode-card">
+          <span class="index">3</span>
+          <h3>预筛增量未通过随机对照</h3>
+          <p>ALM-NGOpt 候选池能把违反量推到 0.31-0.32 区间，但随机抽样也能达到相近结果，代理排序优势不显著。</p>
+        </div>
+      </div>
+      <div class="callout">可信范围、违反量下限和随机对照共同表明：固定代理缺少可行侧数据时，离线搜索很难可靠跨线。</div>
+    </div>
+    <div class="notes">这一页给评委一个听报告的地图。三句话分别对应代理可用性、代理失效机制、随机对照归因。后面每一页都围绕这三句话展开。</div>
+  </section>
+
+  <section class="slide" data-title="Problem">
+    <aside class="sidebar">
+      <div class="brand">Fusion Report</div>
+      <h5>Deck map</h5>
+      <ul class="obj-list">
+        <li class="done">总览</li>
+        <li class="current">问题与闭环</li>
+        <li>四阶段实验</li>
+        <li>增量方案</li>
+        <li>结论与后续</li>
+      </ul>
+      <h5>Current</h5>
+      <p class="dim" style="font-size:13px">Problem 2 · 硬门槛约束</p>
+    </aside>
+    <div class="main report-main wide">
+      <p class="kicker">问题抽象</p>
+      <h2 class="h2 mt-s">Problem 2 是高维、强约束且评估昂贵的硬门槛优化问题。</h2>
+      <div class="grid g4 mt-l">
+        <div class="concept-box">
+          <span class="big-number">80D</span>
+          <div class="metric-label">Fourier 边界系数</div>
+          <div class="metric-note">Nfp=3, SurfaceRZFourier</div>
+        </div>
+        <div class="concept-box">
+          <span class="big-number">5</span>
+          <div class="metric-label">硬约束同时满足</div>
+          <div class="metric-note">A, iota, qi, mirror, elongation</div>
+        </div>
+        <div class="concept-box">
+          <span class="big-number">0</span>
+          <div class="metric-label">官方可行样本</div>
+          <div class="metric-note">68,191 条 no-error Nfp=3 子集内</div>
+        </div>
+        <div class="concept-box">
+          <span class="big-number">≤0.01</span>
+          <div class="metric-label">可行判据</div>
+          <div class="metric-note">全部归一化违反量需低于阈值</div>
+        </div>
+      </div>
+      <p class="sublede mt-l">官方评分采用硬门槛机制：任一约束未满足，score 即为 0。</p>
+    </div>
+    <div class="notes">这一页概括问题难度：可行域稀疏、评估昂贵、且训练数据中没有严格可行正例。</div>
+  </section>
+
+  <section class="slide" data-title="Offline Loop">
+    <aside class="sidebar">
+      <div class="brand">Fusion Report</div>
+      <h5>Deck map</h5>
+      <ul class="obj-list">
+        <li class="done">总览</li>
+        <li class="current">问题与闭环</li>
+        <li>四阶段实验</li>
+        <li>增量方案</li>
+        <li>结论与后续</li>
+      </ul>
+      <h5>Current</h5>
+      <p class="dim" style="font-size:13px">离线流程 · 固定预算审计</p>
+    </aside>
+    <div class="main report-main wide">
+      <p class="kicker">整体方案</p>
+      <h2 class="h2 mt-s">离线代理用于生成候选，VMEC++ 保留为固定预算终审。</h2>
+      <div class="flow">
+        <div class="flow-step"><b>Database</b><span>68k no-error Nfp=3 样本；relaxed55 仅作为近可行种子先验。</span></div>
+        <div class="flow-step"><b>Surrogate</b><span>多任务 MLP ensemble 预测目标、主约束和连续违反量。</span></div>
+        <div class="flow-step accent"><b>Candidate search</b><span>CMA-ES, NGOpt, PCA/GMM, trust-region, ALM-NGOpt 变体。</span></div>
+        <div class="flow-step"><b>Top-k audit</b><span>每组 top10 attempted slots；失败和几何非法也计入分母。</span></div>
+        <div class="flow-step"><b>Diagnosis</b><span>对齐代理预测、真实 VMEC++、距离、随机送审分布。</span></div>
+      </div>
+      <div class="callout">方法学边界：审计结果不回流训练、模型选择或搜索调参；结论仅基于固定预算真实物理审计。</div>
+    </div>
+    <div class="notes">这页说明结论的审计基础。VMEC++ 结果不回流调权重，attempted slots 同时统计成功、失败和几何非法候选。</div>
+  </section>
+
+  <section class="slide" data-title="Cost Gap">
+    <aside class="sidebar">
+      <div class="brand">Fusion Report</div>
+      <h5>Deck map</h5>
+      <ul class="obj-list">
+        <li class="done">总览</li>
+        <li class="current">问题与闭环</li>
+        <li>四阶段实验</li>
+        <li>增量方案</li>
+        <li>结论与后续</li>
+      </ul>
+      <h5>Current</h5>
+      <p class="dim" style="font-size:13px">成本柱状图</p>
+    </aside>
+    <div class="main report-main">
+      <p class="kicker">评估成本</p>
+      <h2 class="h2 mt-s">代理评估具有数量级加速优势，但计算速度不等价于预测可信性。</h2>
+      <div class="split mt-l">
+        <div class="concept-box">
+          <h3>3000 次评估的量级对比</h3>
+          <div class="bar-list mt-m">
+            <div class="bar-row"><div class="bar-label">VMEC++ 估算</div><div class="bar-track"><div class="bar-fill bad" style="--w:100%"></div></div><div class="bar-value">102.6 h</div></div>
+            <div class="bar-row"><div class="bar-label">E2 逐步代理</div><div class="bar-track"><div class="bar-fill good" style="--w:0.8%"></div></div><div class="bar-value">29.0 s</div></div>
+            <div class="bar-row"><div class="bar-label">E3 逐步代理</div><div class="bar-track"><div class="bar-fill good" style="--w:0.6%"></div></div><div class="bar-value">19.6 s</div></div>
+            <div class="bar-row"><div class="bar-label">批量前向</div><div class="bar-track"><div class="bar-fill good" style="--w:0.2%"></div></div><div class="bar-value">0.0049 s</div></div>
+          </div>
+          <p class="small-note">条形长度为演示可读性压缩；数值保留报告实测/估算。</p>
+        </div>
+        <div class="grid g2">
+          <div class="concept-box"><span class="big-number">123 s</span><div class="metric-label">成功 VMEC++ 单候选均值</div></div>
+          <div class="concept-box"><span class="big-number">6.5-9.7 ms</span><div class="metric-label">逐步代理单次评估</div></div>
+          <div class="concept-box"><span class="big-number">1.3-1.9万×</span><div class="metric-label">逐步代理评估环节加速</div></div>
+          <div class="concept-box"><span class="big-number">25 MiB</span><div class="metric-label">批量前向显存占用量级</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="notes">代理模型使大规模候选池搜索具备可行的计算成本。高速评估也会使优化器更快进入代理不可信区域。</div>
+  </section>
+
+  <section class="slide" data-title="Stage 1">
+    <aside class="sidebar">
+      <div class="brand">Fusion Report</div>
+      <h5>Deck map</h5>
+      <ul class="obj-list">
+        <li class="done">总览</li>
+        <li class="done">问题与闭环</li>
+        <li class="current">四阶段实验</li>
+        <li>增量方案</li>
+        <li>结论与后续</li>
+      </ul>
+      <h5>Current</h5>
+      <p class="dim" style="font-size:13px">Stage 1 · 几何失败</p>
+    </aside>
+    <div class="main report-main wide">
+      <p class="kicker">四阶段实验 · Stage 1</p>
+      <h2 class="h2 mt-s">代理在数据内有效，但直接优化首先暴露几何合法性失败。</h2>
+      <table class="table mt-l">
+        <thead><tr><th>组别</th><th>实验设计与候选来源</th><th class="num">审计结果</th><th>诊断结论</th></tr></thead>
+        <tbody>
+          <tr><td><b>E0</b></td><td>无代理搜索；从 68k Nfp=3 数据库按约束违反量优先排序，取 top10 作为基线。</td><td class="num"><span class="status ok">10/10</span></td><td>标定数据库本身可达水平；最好 positive violation 约 0.322。</td></tr>
+          <tr><td><b>E1</b></td><td>以 relaxed55 近可行种子为先验，10D PCA 降维后用 GMM 局部采样，再由代理排序。</td><td class="num"><span class="status ok">10/10</span></td><td>局部生成稳定，但仍未跨过可行线。</td></tr>
+          <tr><td><b>E2</b></td><td>在原始 80D Fourier 系数空间运行 CMA-ES，直接最大化代理分数，检验纯代理外推风险。</td><td class="num"><span class="status bad">0/10</span></td><td>优化到几何非法区域；VMEC++ 无法求解。</td></tr>
+          <tr><td><b>E3</b></td><td>从 relaxed55 出发进行保守 CMA-ES，并加入 ensemble 不确定性、数据支撑距离和约束惩罚。</td><td class="num"><span class="status warn">1/10</span></td><td>惩罚能稍微拉回候选，但不足以稳定保持在真实边界流形。</td></tr>
+        </tbody>
+      </table>
+      <div class="callout">Stage 1 表明：搜索空间设置不当时，代理优化会首先表现为大量几何非法候选。</div>
+    </div>
+    <div class="notes">这页用表格替代报告长段落。Stage 1 显示模型具备分布内预测能力，原始空间搜索会组合出求解器无法接受的形状。</div>
+  </section>
+
+  <section class="slide" data-title="Stage 2 and 3">
+    <aside class="sidebar">
+      <div class="brand">Fusion Report</div>
+      <h5>Deck map</h5>
+      <ul class="obj-list">
+        <li class="done">总览</li>
+        <li class="done">问题与闭环</li>
+        <li class="current">四阶段实验</li>
+        <li>增量方案</li>
+        <li>结论与后续</li>
+      </ul>
+      <h5>Current</h5>
+      <p class="dim" style="font-size:13px">Stage 2/3 · 代理套利与信任域</p>
+    </aside>
+    <div class="main report-main">
+      <p class="kicker">四阶段实验 · Stage 2/3</p>
+      <h2 class="h2 mt-s">几何合法性问题缓解后，主导失败机制转为 surrogate arbitrage。</h2>
+      <div class="split even mt-l">
+        <div class="concept-box">
+          <h3>Stage 2：修正几何后，真实 gap 反而扩大</h3>
+          <p class="small-note"><b>设计：</b>E2-stage2 使用训练集 20D PCA 潜空间，E3-stage2 使用 relaxed55 10D PCA 潜空间；两者均采用可行性优先评分、谱预筛和去重。</p>
+          <div class="bar-list mt-m">
+            <div class="bar-row"><div class="bar-label">旧 E3 成功率</div><div class="bar-track"><div class="bar-fill warn" style="--w:10%"></div></div><div class="bar-value">1/10</div></div>
+            <div class="bar-row"><div class="bar-label">E3-stage2 成功率</div><div class="bar-track"><div class="bar-fill good" style="--w:60%"></div></div><div class="bar-value">6/10</div></div>
+            <div class="bar-row"><div class="bar-label">旧 best violation</div><div class="bar-track"><div class="bar-fill good" style="--w:74%"></div></div><div class="bar-value">0.322</div></div>
+            <div class="bar-row"><div class="bar-label">stage2 best</div><div class="bar-track"><div class="bar-fill bad" style="--w:100%"></div></div><div class="bar-value">0.437</div></div>
+          </div>
+          <p class="callout">预测 log10(qi) 集中在约 -2.90，VMEC++ 实测 gap 却散在 0.44-0.51。</p>
+        </div>
+        <div class="concept-box">
+          <h3>Stage 3：信任域具备诊断价值，但候选退回数据库</h3>
+          <p class="small-note"><b>设计：</b>候选需同时满足 ensemble 分歧、训练/relaxed55 近邻距离和谱合法性阈值；候选池由历史候选、relaxed55 与局部扰动组成。</p>
+          <div class="grid g2 mt-m">
+            <div><span class="big-number">0.83</span><div class="metric-label">stage2 候选 log10(qi) 平均乐观偏差</div></div>
+            <div><span class="big-number">8/8</span><div class="metric-label">trust-region 审计 VMEC++ 成功</div></div>
+            <div><span class="big-number">0.3305</span><div class="metric-label">TR 最好 positive violation</div></div>
+            <div><span class="big-number">E0</span><div class="metric-label">排名前 20 候选全部来源</div></div>
+          </div>
+          <p class="callout">一旦只允许代理可信区域内搜索，候选不再产生新区域，而是回到数据库附近。</p>
+        </div>
+      </div>
+    </div>
+    <div class="notes">这里讲清楚反常现象：成功率提升伴随真实违反量变差。优化器会寻找代理低估违反量最多的位置。</div>
+  </section>
+
+  <section class="slide" data-title="Figure 1">
+    <aside class="sidebar">
+      <div class="brand">Fusion Report</div>
+      <h5>Deck map</h5>
+      <ul class="obj-list">
+        <li class="done">总览</li>
+        <li class="done">问题与闭环</li>
+        <li class="current">四阶段实验</li>
+        <li>增量方案</li>
+        <li>结论与后续</li>
+      </ul>
+      <h5>Current</h5>
+      <p class="dim" style="font-size:13px">Fig. 1 · 代理可信边界</p>
+    </aside>
+    <div class="main report-main wide">
+      <p class="kicker">Fig. 1 · 代理可信范围</p>
+      <h2 class="h2 mt-s">离训练流形越远，log10(qi) 预测越系统性乐观。</h2>
+      <div class="figure-wrap">
+        <img src="../../figures/final-negative-result/fig1_surrogate_validity_boundary.png" alt="Surrogate validity boundary">
+      </div>
+      <div class="caption-row">
+        <div class="caption">E0 在数据库上，预测偏差接近 0。</div>
+        <div class="caption">E1 远离数据后，偏差升至 0.27-0.62。</div>
+        <div class="caption">约 19 倍距离后，VMEC++ 开始无法求解。</div>
+      </div>
+    </div>
+    <div class="notes">这张图是核心证据之一。讲的时候不需要解释每个点，只要抓住横轴的距离和纵轴的实测减预测。向右走，代理越来越乐观，最后直接失败。</div>
+  </section>
+
+  <section class="slide" data-title="Figure 2">
+    <aside class="sidebar">
+      <div class="brand">Fusion Report</div>
+      <h5>Deck map</h5>
+      <ul class="obj-list">
+        <li class="done">总览</li>
+        <li class="done">问题与闭环</li>
+        <li class="current">四阶段实验</li>
+        <li>增量方案</li>
+        <li>结论与后续</li>
+      </ul>
+      <h5>Current</h5>
+      <p class="dim" style="font-size:13px">Fig. 2 · 违反量下限</p>
+    </aside>
+    <div class="main report-main wide">
+      <p class="kicker">Fig. 2 · 约束违反下限</p>
+      <h2 class="h2 mt-s">多种策略都贴近 0.32，但离官方可行阈值仍很远。</h2>
+      <div class="figure-wrap">
+        <img src="../../figures/final-negative-result/fig2_constraint_floor_positive_violation.png" alt="Constraint floor across audited methods">
+      </div>
+      <div class="caption-row">
+        <div class="caption">E0 最好值约 0.322，已经是强基线。</div>
+        <div class="caption">Stage 2 几何改善后，违反量并未改善。</div>
+        <div class="caption">官方可行阈值是 ≤0.01，仍差一个大台阶。</div>
+      </div>
+    </div>
+    <div class="notes">这页用于回答“到底差多少”。0.32 是当前数据条件和搜索预算下观察到的经验下限。</div>
+  </section>
+
+  <section class="slide" data-title="Stage 4A">
+    <aside class="sidebar">
+      <div class="brand">Fusion Report</div>
+      <h5>Deck map</h5>
+      <ul class="obj-list">
+        <li class="done">总览</li>
+        <li class="done">问题与闭环</li>
+        <li class="current">四阶段实验</li>
+        <li>增量方案</li>
+        <li>结论与后续</li>
+      </ul>
+      <h5>Current</h5>
+      <p class="dim" style="font-size:13px">Stage 4A · 随机对照</p>
+    </aside>
+    <div class="main report-main wide">
+      <p class="kicker">四阶段实验 · Stage 4A</p>
+      <h2 class="h2 mt-s">代理辅助 ALM-NGOpt 可推近下限，但未显著优于随机送审。</h2>
+      <div class="stage4-layout mt-l">
+        <table class="table">
+          <thead><tr><th>组别</th><th>实验设计与候选来源</th><th class="num">审计结果</th><th>归因</th></tr></thead>
+          <tbody>
+            <tr><td><b>S4A-1</b></td><td>原始 80D 系数空间运行代理 ALM-NGOpt，诊断纯代理 ALM 是否仍产生非法几何。</td><td class="num"><span class="status bad">0/10</span><br>--</td><td>原始空间仍不可接受。</td></tr>
+            <tr><td><b>S4A-2</b></td><td>训练集 24D PCA 空间运行代理 ALM-NGOpt，检验训练流形内的约束搜索。</td><td class="num"><span class="status bad">0/10</span><br>--</td><td>训练 PCA 空间过窄或候选不稳。</td></tr>
+            <tr><td><b>S4A-3</b></td><td>relaxed55 10D PCA 空间运行代理 ALM-NGOpt，在近可行种子附近局部搜索。</td><td class="num"><span class="status ok">10/10</span><br>0.31668</td><td>relaxed55 PCA 候选池有效。</td></tr>
+            <tr><td><b>S4A-4</b></td><td>从 S4A-2/3 可信候选中做多样性重排和保守筛选，避免近重复送审。</td><td class="num"><span class="status ok">9/10</span><br>0.31318</td><td>多样性重排刷新历史最好。</td></tr>
+            <tr><td><b>S4A-R</b></td><td>从 S4A-2/3 生成并通过谱几何、距离和不确定性筛选后的候选池中随机抽样送审，用于隔离候选池贡献与代理排序贡献。</td><td class="num"><span class="status warn">7/10</span><br>0.31547</td><td>随机送审已进入相同区间。</td></tr>
+          </tbody>
+        </table>
+        <div class="concept-box stage4-summary">
+          <h3>随机对照给出的归因边界</h3>
+          <div class="grid g2 mt-m">
+            <div><span class="big-number">0.31589</span><div class="metric-label">30 次随机重复中位最好值</div></div>
+            <div><span class="big-number">0.31212-0.33183</span><div class="metric-label">随机 5-95% 区间</div></div>
+            <div><span class="big-number">0.20</span><div class="metric-label">S4A-4 在随机分布中的分位</div></div>
+            <div><span class="big-number">0</span><div class="metric-label">所有主审计官方可行解</div></div>
+          </div>
+          <div class="callout">结论：候选池本身具有贡献；代理预筛排序的可归因增量尚未被证明。</div>
+        </div>
+      </div>
+    </div>
+    <div class="notes">这页是第四阶段重点。不能只说 S4A-4 最好，因为随机重复也接近甚至有时更好。这里要把“候选池贡献”和“代理排序贡献”拆开。</div>
+  </section>
+
+  <section class="slide" data-title="Upgrades">
+    <aside class="sidebar">
+      <div class="brand">Fusion Report</div>
+      <h5>Deck map</h5>
+      <ul class="obj-list">
+        <li class="done">总览</li>
+        <li class="done">问题与闭环</li>
+        <li class="done">四阶段实验</li>
+        <li class="current">增量方案</li>
+        <li>结论与后续</li>
+      </ul>
+      <h5>Current</h5>
+      <p class="dim" style="font-size:13px">方案 A/B/C · 表格对比</p>
+    </aside>
+    <div class="main report-main wide">
+      <p class="kicker">增量方案 A/B/C</p>
+      <h2 class="h2 mt-s">模型升级改善监督预测指标，但尚未自动转化为可行解。</h2>
+      <table class="table mt-l">
+        <thead><tr><th>方案</th><th>做了什么</th><th class="num">log10(qi) test MAE</th><th>真实审计结果</th></tr></thead>
+        <tbody>
+          <tr><td><b>6 指标主线</b></td><td>Problem 2 六个主指标 + continuous violation</td><td class="num">0.04292</td><td>建立可信边界与 0.32 违反量下限；0 个官方可行。</td></tr>
+          <tr><td><b>15 指标 A</b></td><td>加入 default 中 9 个辅助物理指标，多任务训练</td><td class="num">0.03963</td><td>S4A-4 最好到 0.29535，但随机对照也进入相近区间。</td></tr>
+          <tr><td><b>wout24 B-small</b></td><td>训练阶段加入 24 个低维 wout 中间监督，推理仍只用边界系数</td><td class="num">0.03817</td><td>wout 辅助头平均 R² 约 0.857；最好 violation 仍为 0.322441。</td></tr>
+          <tr><td><b>cross-Nfp C</b></td><td>Nfp=1/2/4/5 预训练，再 Nfp=3 微调</td><td class="num">≈0.0321</td><td>Stage 4A 最好 0.31186；约 0.0667 分位，仍未越过 5% 随机尾部。</td></tr>
+        </tbody>
+      </table>
+      <div class="callout">升级路线的共同边界：监督拟合改善后，可行侧偏差仍需真实物理审计校正。</div>
+    </div>
+    <div class="notes">这里把方案 A/B/C 合成一页，集中展示训练改进与真实审计结果。三套方案均保留可行侧数据缺口。</div>
+  </section>
+
+  <section class="slide" data-title="Upgrade Bars">
+    <aside class="sidebar">
+      <div class="brand">Fusion Report</div>
+      <h5>Deck map</h5>
+      <ul class="obj-list">
+        <li class="done">总览</li>
+        <li class="done">问题与闭环</li>
+        <li class="done">四阶段实验</li>
+        <li class="current">增量方案</li>
+        <li>结论与后续</li>
+      </ul>
+      <h5>Current</h5>
+      <p class="dim" style="font-size:13px">方案柱状图</p>
+    </aside>
+    <div class="main report-main">
+      <p class="kicker">模型升级量化</p>
+      <h2 class="h2 mt-s">监督误差逐步下降；审计归因仍受随机对照约束。</h2>
+      <div class="split even mt-l">
+        <div class="concept-box">
+          <h3>log10(qi) 测试 MAE（越低越好）</h3>
+          <div class="bar-list mt-m">
+            <div class="bar-row"><div class="bar-label">6 指标主线</div><div class="bar-track"><div class="bar-fill bad" style="--w:100%"></div></div><div class="bar-value">0.04292</div></div>
+            <div class="bar-row"><div class="bar-label">15 指标 A</div><div class="bar-track"><div class="bar-fill warn" style="--w:92%"></div></div><div class="bar-value">0.03963</div></div>
+            <div class="bar-row"><div class="bar-label">wout24 B</div><div class="bar-track"><div class="bar-fill warn" style="--w:89%"></div></div><div class="bar-value">0.03817</div></div>
+            <div class="bar-row"><div class="bar-label">cross-Nfp C</div><div class="bar-track"><div class="bar-fill good" style="--w:75%"></div></div><div class="bar-value">≈0.0321</div></div>
+          </div>
+        </div>
+        <div class="concept-box">
+          <h3>Stage 4A 归因信号</h3>
+          <div class="bar-list mt-m">
+            <div class="bar-row"><div class="bar-label">6 指标 S4A-4</div><div class="bar-track"><div class="bar-fill warn" style="--w:78%"></div></div><div class="bar-value">p≈0.20</div></div>
+            <div class="bar-row"><div class="bar-label">15 指标 S4A-4</div><div class="bar-track"><div class="bar-fill warn" style="--w:45%"></div></div><div class="bar-value">p≈0.0667</div></div>
+            <div class="bar-row"><div class="bar-label">cross-Nfp S4A-4</div><div class="bar-track"><div class="bar-fill warn" style="--w:45%"></div></div><div class="bar-value">p≈0.0667</div></div>
+            <div class="bar-row"><div class="bar-label">显著尾部门槛</div><div class="bar-track"><div class="bar-fill good" style="--w:32%"></div></div><div class="bar-value">p&lt;0.05</div></div>
+          </div>
+          <p class="small-note">分位越低越好；现有结果接近但未越过 5% 随机尾部。</p>
+        </div>
+      </div>
+    </div>
+    <div class="notes">这一页补充没有直接包含在三张图里的数值。用两组条形图说明：监督指标确实变好，但归因统计仍不够强。</div>
+  </section>
+
+  <section class="slide" data-title="Figure 3">
+    <aside class="sidebar">
+      <div class="brand">Fusion Report</div>
+      <h5>Deck map</h5>
+      <ul class="obj-list">
+        <li class="done">总览</li>
+        <li class="done">问题与闭环</li>
+        <li class="done">四阶段实验</li>
+        <li class="current">增量方案</li>
+        <li>结论与后续</li>
+      </ul>
+      <h5>Current</h5>
+      <p class="dim" style="font-size:13px">Fig. 3 · 四方案综合图</p>
+    </aside>
+    <div class="main report-main wide">
+      <p class="kicker">Fig. 3 · 四方案综合对比</p>
+      <h2 class="h2 mt-s">更优的代理拟合尚未将 VMEC++ 审计推入官方可行阈值以内。</h2>
+      <div class="figure-wrap">
+        <img src="../../figures/scheme-comparison/fig3_model_scheme_comparison.png" alt="Model scheme comparison">
+      </div>
+      <div class="caption-row">
+        <div class="caption">A/B/C 都改善了部分监督指标。</div>
+        <div class="caption">真实审计全部仍在 official ≤0.01 以上。</div>
+        <div class="caption">随机带说明“预筛增量”不能只看最好值。</div>
+      </div>
+    </div>
+    <div class="notes">这张综合图把所有路线收束到一个坐标系。最后一个面板显示监督 MAE 下降；前三个面板显示真实审计仍停留在官方可行阈值以上。</div>
+  </section>
+
+  <section class="slide" data-title="Final Diagnosis">
+    <aside class="sidebar">
+      <div class="brand">Fusion Report</div>
+      <h5>Deck map</h5>
+      <ul class="obj-list">
+        <li class="done">总览</li>
+        <li class="done">问题与闭环</li>
+        <li class="done">四阶段实验</li>
+        <li class="done">增量方案</li>
+        <li class="current">结论与后续</li>
+      </ul>
+      <h5>Current</h5>
+      <p class="dim" style="font-size:13px">最终诊断 · 三种行为模式</p>
+    </aside>
+    <div class="main report-main">
+      <p class="kicker">核心结论</p>
+      <h2 class="h2 mt-s">固定代理 + 无可行侧数据的组合主要呈现三种行为模式。</h2>
+      <div class="three-modes">
+        <div class="mode-card"><span class="index">A</span><h3>利用模型误差</h3><p>约束权重越高，优化器越容易寻找代理低估 log10(qi) 违反量的位置。</p></div>
+        <div class="mode-card"><span class="index">B</span><h3>退回已有数据</h3><p>一旦严格限制在可信区域，候选池即回到 E0/relaxed55 附近，难以产生新的有效区域。</p></div>
+        <div class="mode-card"><span class="index">C</span><h3>预筛贡献不可分辨</h3><p>ALM-NGOpt 候选池有效，但代理打分排序尚未显著超出随机送审分布。</p></div>
+      </div>
+      <blockquote class="quote mt-l">本项目的主要产出，是将“代理外推风险”从定性警告转化为可测量的可信边界、违反量下限与随机对照结论。</blockquote>
+    </div>
+    <div class="notes">这是总收束页。当前负结果具备明确机制，证据来自可信范围、违反量下限和随机送审对照。</div>
+  </section>
+
+  <section class="slide" data-title="Next Steps">
+    <aside class="sidebar">
+      <div class="brand">Fusion Report</div>
+      <h5>Deck map</h5>
+      <ul class="obj-list">
+        <li class="done">总览</li>
+        <li class="done">问题与闭环</li>
+        <li class="done">四阶段实验</li>
+        <li class="done">增量方案</li>
+        <li class="current">结论与后续</li>
+      </ul>
+      <h5>Current</h5>
+      <p class="dim" style="font-size:13px">未来方向 · 高保真信息</p>
+    </aside>
+    <div class="main report-main">
+      <p class="kicker">未来方向</p>
+      <h2 class="h2 mt-s">应补充新的高保真信息，并探索更具归纳偏置的代理模型。</h2>
+      <div class="path-list">
+        <div class="path-item"><span class="dot">1</span><div><b>主动学习闭环</b><p>把固定预算 VMEC++ 审计拆成多轮：候选排序、真算、回填、再校准，专门补近可行侧数据。</p></div></div>
+        <div class="path-item"><span class="dot">2</span><div><b>wout 表征用于稳定性/筛选头</b><p>B-small 已证明中间监督可学；后续应把它显式转成 VMEC-stability/filter 规则。</p></div></div>
+        <div class="path-item"><span class="dot">3</span><div><b>cross-Nfp 用于初始化</b><p>C 方案可保留为默认初始化选项，但不能替代近可行侧高保真样本回填。</p></div></div>
+        <div class="path-item"><span class="dot">4</span><div><b>可微物理与磁面表征</b><p>引入可微信息或更合适的边界表征，减少固定代理在外推区被利用的机会。</p></div></div>
+        <div class="path-item"><span class="dot">5</span><div><b>探索更符合物理和几何结构假设的新代理模型架构</b><p>在保持线上输入为边界系数的前提下，引入更适配谱结构、几何先验与不确定性校准的代理架构，以提升近可行区外推的稳定性。</p></div></div>
+      </div>
+    </div>
+    <div class="notes">最后一页只讲未来方向。重点是后续资源应该花在哪里：新的物理信息、主动学习、稳定性筛选、表征，以及更适配本问题结构的代理模型架构。</div>
+  </section>
+</div>
+<script src="vendor/html-ppt/runtime.js"></script>
+</body>
+</html>

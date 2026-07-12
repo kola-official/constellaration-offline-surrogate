@@ -1,0 +1,57 @@
+run_id: quick_cross_nfp_seed0
+mode: cross_nfp_pretrain
+seed: 0
+
+hardware:
+  cpu_workers: 8
+  dataloader_workers: 0
+  torch_num_threads: 4
+  gpu_devices: [0, 1]
+  parallel_ensemble: true
+
+data:
+  nfp3_dataset_dir: ../../../official_space/stage1_base/outputs/dataset
+  pretrain_dataset_dir: outputs_cross_nfp/dataset_pretrain
+  pretrain_validation_size: 0.10
+  pretrain_max_rows:
+  nfp3_value: 3
+
+features:
+  include_nfp: true
+  nfp_scale: 3.0
+  x_scaler_source: nfp3_train
+
+surrogate:
+  ensemble_members: 4
+  width: 256
+  blocks: 3
+  dropout: 0.03
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  batch_size: 2048
+  max_epochs: 80
+  patience: 12
+  problem2_label_weight: 1.0
+  auxiliary_label_weight: 0.25
+  constraint_loss_weight: 0.2
+  label_weights:
+    log10_qi: 2.0
+
+pretrain:
+  run_name: pretrain_90k_15metric
+  max_epochs: 60
+  patience: 8
+
+baseline:
+  run_name: baseline_random_15metric_nfp
+
+finetune:
+  pretrain_run_name: pretrain_90k_15metric
+  low_lr_run_name: finetune_low_lr_15metric
+  default_lr_run_name: finetune_default_lr_15metric
+  low_learning_rate: 0.0003
+  default_learning_rate: 0.001
+  load_heads: false
+
+multiseed:
+  seeds: [0, 1, 2]

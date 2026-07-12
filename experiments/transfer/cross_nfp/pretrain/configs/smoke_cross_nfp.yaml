@@ -1,0 +1,55 @@
+run_id: smoke_cross_nfp_seed0
+mode: cross_nfp_pretrain_smoke
+seed: 0
+
+hardware:
+  cpu_workers: 2
+  dataloader_workers: 0
+  torch_num_threads: 2
+  gpu_devices: [0]
+  parallel_ensemble: false
+
+data:
+  nfp3_dataset_dir: ../../../official_space/stage1_base/outputs/dataset
+  pretrain_dataset_dir: outputs_cross_nfp/dataset_pretrain_smoke
+  pretrain_validation_size: 0.10
+  pretrain_max_rows: 512
+  max_rows_per_split: 512
+  nfp3_value: 3
+
+features:
+  include_nfp: true
+  nfp_scale: 3.0
+  x_scaler_source: nfp3_train
+
+surrogate:
+  ensemble_members: 1
+  width: 64
+  blocks: 1
+  dropout: 0.0
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  batch_size: 128
+  max_epochs: 1
+  patience: 1
+  problem2_label_weight: 1.0
+  auxiliary_label_weight: 0.25
+  constraint_loss_weight: 0.2
+  label_weights:
+    log10_qi: 2.0
+
+pretrain:
+  run_name: smoke_pretrain_15metric
+  max_epochs: 1
+  patience: 1
+
+baseline:
+  run_name: smoke_baseline_random_15metric_nfp
+
+finetune:
+  pretrain_run_name: smoke_pretrain_15metric
+  low_lr_run_name: smoke_finetune_low_lr_15metric
+  default_lr_run_name: smoke_finetune_default_lr_15metric
+  low_learning_rate: 0.0003
+  default_learning_rate: 0.001
+  load_heads: false

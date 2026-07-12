@@ -1,0 +1,33 @@
+run_id: quick_stage3_seed0
+mode: quick_stage3
+seed: 0
+audit_budget_per_method: 8
+vmec_workers: 8
+hardware:
+  cpu_workers: 8
+  dataloader_workers: 0
+  torch_num_threads: 4
+  gpu_devices: [0, 1]
+  parallel_ensemble: true
+diagnostics:
+  include_failed_vmec: true
+trust_region:
+  candidate_pool_limit: 160
+  local_samples: 1200
+  local_sigma_multiplier: 0.65
+  train_pca_components: 20
+  relaxed_pca_components: 10
+  train_distance_quantile: 0.5
+  relaxed_distance_quantile: 0.75
+  train_distance_multiplier: 1.0
+  relaxed_distance_multiplier: 1.5
+  max_log10_qi_uncertainty: 0.06
+  max_l_gradb_uncertainty: 0.20
+  max_mnv_uncertainty: 0.04
+  rank_weights:
+    qi_violation: 1.0
+    positive_violation: 0.7
+    log10_qi_uncertainty: 0.5
+    train_distance_ratio: 0.2
+    relaxed_distance_ratio: 0.2
+    l_gradb_bonus: 0.02

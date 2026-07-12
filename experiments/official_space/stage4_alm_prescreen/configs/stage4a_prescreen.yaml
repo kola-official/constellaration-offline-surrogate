@@ -1,0 +1,43 @@
+run_id: stage4a_prescreen_quick_seed0
+seed: 0
+audit_budget_per_method: 10
+vmec_workers: 8
+vmec_timeout_seconds: 600
+hardware:
+  cpu_workers: 8
+  dataloader_workers: 0
+  torch_num_threads: 4
+  gpu_devices: [0, 1]
+  parallel_ensemble: true
+stage4a:
+  surrogate_budget_per_seed: 1200
+  seeds_per_group: 4
+  candidate_pool_per_group: 120
+  audit_budget_per_group: 10
+  random_repeats: 30
+  random_audit_budget: 10
+  batch_size: 4096
+  train_pca_components: 24
+  relaxed_pca_components: 10
+  train_distance_quantile: 0.95
+  relaxed_distance_quantile: 0.95
+  train_distance_multiplier: 1.25
+  relaxed_distance_multiplier: 1.25
+  high_risk_neighbor_ratio: 0.35
+  high_risk_positive_violation: 0.38
+  alm:
+    rho: 20.0
+    lambda_update_interval: 200
+    objective_scale: 1.0
+    uncertainty_weight: 0.6
+    train_distance_weight: 0.8
+    relaxed_distance_weight: 0.6
+    geometry_weight: 10.0
+  ranking:
+    positive_violation_weight: 100.0
+    qi_violation_weight: 40.0
+    objective_weight: 0.4
+    uncertainty_weight: 1.0
+    train_distance_weight: 1.0
+    relaxed_distance_weight: 0.6
+    geometry_weight: 20.0
