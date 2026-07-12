@@ -78,8 +78,8 @@ HTML 使用仓库内本地 CSS 与 JavaScript 资源。可直接用浏览器打�
 ```
 
 生成的 `outputs*` 目录通过 `.gitignore` 仅保留在本地。脚本职责见
-[`docs/SCRIPT_CATALOG.md`](docs/SCRIPT_CATALOG.md)。历史机器前缀命名与后续
-包化重构说明见 [`docs/REPOSITORY_LAYOUT.md`](docs/REPOSITORY_LAYOUT.md)。
+[`docs/SCRIPT_CATALOG.md`](docs/SCRIPT_CATALOG.md)。目录说明与后续包化重构计划见
+[`docs/REPOSITORY_LAYOUT.md`](docs/REPOSITORY_LAYOUT.md)。
 
 ## 环境安装
 

@@ -92,11 +92,13 @@ def main() -> None:
 
     missing = [name for name, result in imports.items() if not result.get("ok")]
     if missing:
-        raise SystemExit(f"Gate A failed; missing imports: {missing}")
+        raise SystemExit(f"Environment check failed; missing imports: {missing}")
     if not cuda.get("available"):
-        raise SystemExit("Gate A failed; torch is importable but CUDA is unavailable")
+        raise SystemExit(
+            "Environment check failed; torch is importable but CUDA is unavailable"
+        )
 
-    print("Gate A passed")
+    print("Environment check passed")
 
 
 if __name__ == "__main__":

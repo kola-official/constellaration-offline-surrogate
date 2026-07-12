@@ -88,8 +88,8 @@ machine that ran them:
 
 Generated `outputs*` directories remain local through `.gitignore`. Script
 responsibilities are listed in [`docs/SCRIPT_CATALOG.md`](docs/SCRIPT_CATALOG.md).
-Historical machine-prefixed names and the planned package extraction are noted
-in [`docs/REPOSITORY_LAYOUT.md`](docs/REPOSITORY_LAYOUT.md).
+Layout notes and a planned package extraction are described in
+[`docs/REPOSITORY_LAYOUT.md`](docs/REPOSITORY_LAYOUT.md).
 
 ## Installation
 

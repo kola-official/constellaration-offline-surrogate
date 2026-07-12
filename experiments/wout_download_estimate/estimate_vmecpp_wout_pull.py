@@ -232,7 +232,7 @@ def build_estimate(
             "practical_if_download_full_then_save_subset_copy": format_bytes(
                 full_bytes + subset_raw_wout_bytes
             ),
-            "safe_scratch_budget_for_hf_cache_plus_processing": format_bytes(
+            "recommended_disk_budget_for_hf_cache_plus_processing": format_bytes(
                 full_bytes * 1.5 + subset_raw_wout_bytes
             ),
             "full_wout_parquet_cache_only": format_bytes(full_bytes),

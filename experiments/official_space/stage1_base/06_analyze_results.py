@@ -430,11 +430,11 @@ def write_final_report(
     )
     baseline_score = reference.iloc[0].get("paper_reported_score") if not reference.empty else None
     lines = [
-        "# RTX3090 Simple QI Experiment Report",
+        "# Offline Surrogate Experiment Report",
         "",
         "## Scope",
         "",
-        "This report summarizes the resource-limited offline surrogate-assisted pipeline for ConStellaration Problem 2. The ALM-NGOpt baseline is recorded only as a paper reference and was not rerun on RTX3090.",
+        "This report summarizes the offline surrogate-assisted pipeline for ConStellaration Problem 2. The ALM-NGOpt baseline is recorded only as a paper reference and was not rerun under the same local compute budget.",
         "",
         "## Surrogate",
         "",
@@ -447,7 +447,7 @@ def write_final_report(
         "",
         f"- Attempted total: {manifest.get('attempted_total')} candidates; budget per method: {manifest.get('audit_budget_per_method')}.",
         f"- VMEC success by method: {manifest.get('success_by_method')}.",
-        "- No audited candidate satisfied the official Problem 2 feasibility threshold in this quick run; all official scores are therefore 0.",
+        "- No audited candidate satisfied the official Problem 2 feasibility threshold in this run; all official scores are therefore 0.",
         f"- Best equal-budget method by official score: {best_method} (tie at score 0; inspect objective and violation tables for failure mode).",
         "",
         "## Main Comparison",
@@ -456,7 +456,7 @@ def write_final_report(
         "",
         "## Baseline Reference",
         "",
-        f"- Paper ALM-NGOpt reference score: {baseline_score}. It is external context only, not an equal-budget RTX3090 comparison.",
+        f"- Paper ALM-NGOpt reference score: {baseline_score}. It is external context only, not an equal-budget local comparison.",
         "",
         "## Failure Mode",
         "",

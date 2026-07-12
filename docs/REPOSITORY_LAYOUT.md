@@ -13,10 +13,9 @@ The public release contains:
 It does not contain data, checkpoints, candidates, audits, result tables,
 server logs, environment dumps, PID/marker files, or bundles.
 
-## Current layout (science-role names)
+## Current layout
 
-Experiment directories are grouped by scientific role rather than by the machine
-that ran them:
+Experiment directories are grouped by scientific role:
 
 ```text
 experiments/
@@ -39,31 +38,14 @@ experiments/
   wout_download_estimate/     # wout download / stream utilities
 ```
 
-Sibling stages within a track resolve peer directories by relative path. Cross-
-track references (for example, pretrain → official-space Stage 1) use repository
-root discovery via `requirements.txt`, `LICENSE`, and `CITATION.cff` markers.
+Sibling stages within a track resolve peer directories by relative path.
+Cross-track references use repository-root discovery via `requirements.txt`,
+`LICENSE`, and `CITATION.cff`.
 
-## Historical name map (retired)
+## Planned package extraction
 
-Machine-prefixed names used during development were renamed for the public
-release. They are not live entry points:
-
-| Retired directory | Current directory |
-|---|---|
-| `rtx3090_simple_qi` | `experiments/official_space/stage1_base` |
-| `rtx3090_simple_qi_stage2` | `experiments/official_space/stage2_latent` |
-| `rtx3090_simple_qi_stage3` | `experiments/official_space/stage3_trust_region` |
-| `rtx3090_simple_qi_stage4` | `experiments/official_space/stage4_alm_prescreen` |
-| `rtx3090_simple_qi_wout24` | `experiments/auxiliary_supervision/wout24` |
-| `rtx3090_cross_nfp_pretrain` | `experiments/transfer/cross_nfp/pretrain` |
-| `rtx3090_cross_nfp_downstream` | `experiments/transfer/cross_nfp/downstream/stage1` |
-| `rtx3090_cross_nfp_downstream_stage2` | `experiments/transfer/cross_nfp/downstream/stage2_latent` |
-| `rtx3090_cross_nfp_downstream_stage3` | `experiments/transfer/cross_nfp/downstream/stage3_trust_region` |
-| `rtx3090_cross_nfp_downstream_stage4` | `experiments/transfer/cross_nfp/downstream/stage4_alm_prescreen` |
-
-## Planned package extraction (post-v0.1)
-
-After unit tests land, reusable modules can move into an importable package:
+After broader unit tests land, reusable modules can move into an importable
+package:
 
 ```text
 src/constellaration_offline_search/
@@ -78,5 +60,5 @@ docs/
 tests/
 ```
 
-That extraction is intentionally deferred so stage-to-stage reproduction paths
-stay intact for the first public release.
+That extraction is deferred so stage-to-stage reproduction paths remain
+intact for the current release.

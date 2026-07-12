@@ -237,7 +237,9 @@ def main() -> None:
     if failed_imports:
         raise SystemExit(f"Missing required imports: {failed_imports}")
     if not torch_report.get("cuda_available"):
-        raise SystemExit("torch.cuda.is_available() is false; expected RTX3090 CUDA environment.")
+        raise SystemExit(
+            "torch.cuda.is_available() is false; a CUDA-capable GPU is required."
+        )
     if "error" in dataset_report:
         raise SystemExit(f"Could not inspect Nfp=3 dataset: {dataset_report['error']}")
     for split, item in dataset_report.get("splits", {}).items():

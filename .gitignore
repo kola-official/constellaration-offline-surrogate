@@ -72,7 +72,7 @@ presentations/**
 !presentations/advisor_report/vendor/
 !presentations/advisor_report/vendor/html-ppt/
 !presentations/advisor_report/vendor/html-ppt/**
-# Local screening dumps (historical machine-named folder and generic outputs)
+# Local screening dumps (not published)
 experiments/hf_config_screening/rtx3090_outputs/
 experiments/hf_config_screening/outputs/
 *.sha256
