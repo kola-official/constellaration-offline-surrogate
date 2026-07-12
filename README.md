@@ -2,6 +2,8 @@
 
 **Author: Shengnian Liu**
 
+[English](README.md) | [中文](README_zh.md)
+
 This repository presents an offline surrogate-guided workflow for discovering
 quasi-isodynamic stellarator boundary candidates in ConStellaration Problem 2.
 The release includes methodology, executable scripts, configurations, a Chinese
