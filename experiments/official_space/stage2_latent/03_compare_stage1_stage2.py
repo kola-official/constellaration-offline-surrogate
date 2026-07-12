@@ -318,7 +318,7 @@ def write_report(summary: pd.DataFrame, figure_status: dict[str, str]) -> None:
     lines.extend(
         [
             f"- Official feasible count remains {feasible_total}; this should be reported as a negative result, not hidden.",
-            "- Dominant successful-candidate violation remains log10(qi), so the main bottleneck is still the missing feasible-side data and the qi gap rather than GPU training capacity.",
+            "- Dominant successful-candidate violation remains log10(qi). The main bottleneck is missing feasible-side data and the qi gap under the current audit budget.",
             "",
             "## Figures",
             "",

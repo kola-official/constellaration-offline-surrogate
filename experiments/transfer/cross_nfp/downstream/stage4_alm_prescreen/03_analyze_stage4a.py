@@ -318,7 +318,7 @@ def write_report(payload: dict[str, Any]) -> None:
             "",
             "## Interpretation Guardrails",
             "",
-            "- A lower violation than Stage 1-3 at the same primary audit budget supports surrogate-assisted prescreening efficiency, not pure surrogate replacement.",
+            "- A lower violation than Stage 1-3 at the same primary audit budget supports surrogate-assisted prescreening efficiency under the fixed primary audit budget.",
             "- Any feasible or near-feasible claim must be based on the VMEC++ audit rows, not on surrogate predictions.",
             "- Auxiliary random-control VMEC++ labels are reported separately from the primary per-method budget.",
             "",

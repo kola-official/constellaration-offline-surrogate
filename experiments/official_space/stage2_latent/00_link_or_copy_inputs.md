@@ -1,6 +1,6 @@
 # Stage2 Inputs
 
-This experiment does not retrain the surrogate and does not overwrite stage1 outputs.
+This experiment reuses the Stage 1 surrogate and Stage 1 outputs without retraining or overwriting them.
 
 Read-only inputs:
 

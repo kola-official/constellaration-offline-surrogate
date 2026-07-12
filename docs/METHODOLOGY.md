@@ -112,4 +112,4 @@ The most informative next experiment is sparse-feedback active learning:
 5. add the new labels and retrain;
 6. repeat while plotting best official score against cumulative calls.
 
-This extension must be labeled hybrid or active-learning, not pure offline.
+This extension is hybrid or active-learning work.

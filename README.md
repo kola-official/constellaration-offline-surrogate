@@ -27,9 +27,9 @@ VMEC++ equilibrium solves are too costly to place inside a large free search
 loop. The official Hugging Face dataset provides a large QI-like corpus, but the
 **error-free Nfp=3 subset used here (68,191 rows) contains zero samples that meet
 all strict Problem 2 constraints at once**. Feasibility is therefore sparse in
-the training support, and any “feasibility” signal learned by a model is at best
-an interpolation/extrapolation of continuous violations—not exposure to true
-feasible equilibria.
+the training support. Any “feasibility” signal learned by a model is at best
+an interpolation or extrapolation of continuous violations. The model has not
+seen true feasible equilibria in this subset.
 
 ### Goal of this project
 
@@ -69,16 +69,17 @@ Under the stated offline protocol and the used Nfp=3 subset:
    search tends to **exploit optimistic model error** (high predicted score, poor
    audited physics). Hard trust-region limits tend to **collapse back to the
    database neighborhood** without crossing the official feasible line.
-3. **Surrogate-assisted ALM-style prescreen does not beat random audit control**
-   under matched budgets in Stage 4A. Candidate-pool construction may help
-   slightly; ranking credit is not attributable to the surrogate alone.
+3. **Under matched budgets in Stage 4A, surrogate-assisted ALM-style prescreen
+   stays inside the random audit-control distribution.** Candidate-pool
+   construction may help slightly. Ranking credit alone is hard to attribute to
+   the surrogate.
 4. **Representation upgrades help supervision, not automatic feasibility.**
    15-metric multitask, wout intermediate heads, and cross-Nfp pretraining improve
    prediction metrics (and sometimes VMEC runnability), but audited runs remain
    at **zero official feasible candidates** in the reported protocols.
-5. **Primary product is diagnostic evidence**, not a claim of a new top entry on
-   the public design leaderboard. Crossing feasibility likely needs feasible-side
-   or near-feasible-side high-fidelity labels (hybrid active learning).
+5. **Primary product is diagnostic evidence** about offline surrogate reliability.
+   Crossing feasibility likely needs feasible-side or near-feasible-side
+   high-fidelity labels (hybrid active learning).
 
 Detailed numbers, ablations, and wording boundaries are in the Chinese report.
 
@@ -101,8 +102,8 @@ in the denominator. Audit labels must not re-enter the same offline run.
 - **Architecture:** residual MLP ensemble (4 members), multitask regression,
   ensemble disagreement as uncertainty.
 - **Why continuous violations:** with zero official-feasible positives, binary
-  feasibility classification collapses; continuous violation regression supplies
-  a ranking signal without pretending feasible labels exist.
+  feasibility classification collapses. Continuous violation regression supplies
+  a usable ranking signal from available labels.
 - **Wout rule:** wout-derived quantities are **training labels only**. Using them
   at inference would require VMEC++ first and remove the intended speedup.
 
@@ -142,7 +143,7 @@ supervised train/val/test splits; they serve only as generation priors.
 - **PCA / GMM:** keep candidates on data-supported geometry near relaxed seeds.
 - **Trust region:** ensemble uncertainty + train/seed distances + spectral checks.
 - **Surrogate arbitrage:** optimizers mining systematic optimism at the edge of
-  training support—measured rather than assumed.
+  training support. This project measures that behavior with audit diagnostics.
 
 ## Report, presentation, and figures
 
@@ -163,7 +164,7 @@ Open the HTML file in a browser and use arrow keys to navigate.
 
 ## Relation to ConStellaration and the official leaderboard
 
-This repository builds on the official ecosystem; it does not replace it.
+This repository builds on the official ConStellaration ecosystem.
 
 | Resource | Role here |
 |---|---|
@@ -174,14 +175,14 @@ This repository builds on the official ecosystem; it does not replace it.
 
 - Official evaluation is authoritative. Surrogate values are predictions; VMEC++
   values are audited physics quantities.
-- Leaderboard rows establish the **final audited boundary and score**. They do
-  not publish each submitter’s search history or VMEC++ call count; this project
-  does not reconstruct private trajectories.
+- Leaderboard rows establish the **final audited boundary and score**. Public
+  tables omit each submitter’s search history and VMEC++ call count. This project
+  leaves private trajectories out of scope.
 - Paper ALM-NGOpt optimizes **with physics in the loop** under a large budget.
-  This work uses **offline surrogate search + fixed local audit budget**. The
-  two protocols are not equal-budget comparisons.
+  This work uses **offline surrogate search + fixed local audit budget**. Budget
+  and evaluation flow differ between the two protocols.
 - This project contributes method-level diagnostics of when offline surrogate
-  ranking is reliable—not a claim of a new top leaderboard entry.
+  ranking is reliable under the stated offline protocol.
 
 **Leaderboard question:** which audited boundary scores best under the official
 metric?  
@@ -283,10 +284,11 @@ Later stages consume earlier local outputs. Full stage/script map:
 1. Hybrid active learning: propose with the surrogate, audit with VMEC++, retrain;
    plot best official score vs. cumulative physics calls.
 2. Acquire feasible-side or near-feasible-side high-fidelity labels.
-3. Use intermediate physics as **filters** for ranking, not sole objectives.
-4. Broader transfer only with aligned Problem 2 vacuum definitions and scoring.
-5. Boundary representation research (near-axis, learned latents, spectral bands)—
-   out of scope for this release.
+3. Use intermediate physics as ranking **filters**, with Fourier coefficients still
+   as inference input and Problem 2 metrics for scoring.
+4. Broader transfer with aligned Problem 2 vacuum definitions and scoring.
+5. Boundary representation research (near-axis, learned latents, spectral bands)
+   is left for separate work beyond this release.
 6. Engineering: shared package, unit tests (feature order, constraint
    normalization, boundary round-trip, audit budget), clean-environment smoke runs.
 

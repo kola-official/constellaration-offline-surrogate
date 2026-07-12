@@ -52,8 +52,8 @@ ConStellaration, VMEC++, and HTML PPT Studio retain their original terms. See
 
 1. Automated unit tests currently cover science-role path wiring; broader
    physics-label and audit-budget tests remain planned for a later release.
-2. Stage directories still share logic through sibling imports rather than a
-   single package; a shared-package extraction is deferred.
+2. Stage directories still share logic through sibling imports. A shared-package
+   extraction is deferred.
 3. Platform-specific wheels may be required for PyTorch and the pinned
    ConStellaration stack.
 4. Public figures and report tables summarize local experiments; row-level

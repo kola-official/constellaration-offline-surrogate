@@ -211,7 +211,7 @@ def write_report(
     if top_prior:
         lines.append(f"- Top trust-region candidates by prior method: {top_prior}.")
     lines.append(
-        "- Interpretation: the trust-region ablation rejects the Stage2 optimized blind spot and collapses to E0-like database candidates. It improves audited log10(qi) gap within that trusted pool, but it does not beat the old best overall positive max violation and does not produce an official feasible candidate."
+        "- Interpretation: the trust-region ablation rejects the Stage2 optimized blind spot and collapses to E0-like database candidates. Audited log10(qi) gap improves within that trusted pool. The old best overall positive max violation is not improved, and no official feasible candidate appears."
     )
     lines.extend(["", "## Figures", "", str(figure_status)])
     (OUTPUT_DIR / "run_summary" / "final_report_stage3.md").write_text("\n".join(lines) + "\n")

@@ -456,7 +456,7 @@ def write_final_report(
         "",
         "## Baseline Reference",
         "",
-        f"- Paper ALM-NGOpt reference score: {baseline_score}. It is external context only, not an equal-budget local comparison.",
+        f"- Paper ALM-NGOpt reference score: {baseline_score}. External reference only; budget and evaluation flow differ from this offline run.",
         "",
         "## Failure Mode",
         "",
