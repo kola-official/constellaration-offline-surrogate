@@ -33,7 +33,7 @@ seen true feasible equilibria in this subset.
 
 ### Goal of this project
 
-Build a full **offline** loop:
+Build a full **offline** pipeline:
 
 ```text
 official data

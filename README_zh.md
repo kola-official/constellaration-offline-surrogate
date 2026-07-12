@@ -25,7 +25,7 @@ VMEC++ 平衡求解成本过高，不宜直接嵌入大规模自由搜索内环�
 
 ### 项目目标
 
-构建一条完整的**离线**闭环：
+构建一条完整的**离线**流程：
 
 ```text
 官方数据
@@ -47,7 +47,7 @@ VMEC++ 平衡求解成本过高，不宜直接嵌入大规模自由搜索内环�
 | **搜索工具** | 代理上的 CMA-ES / NGOpt；松弛种子附近 PCA–GMM；信任域；代理 ALM 式预筛 |
 | **主线阶段** | Stage 1 的 E0–E3 → Stage 2 潜空间 → Stage 3 信任域 → Stage 4A 预筛 + 随机对照 |
 | **模型升级** | 方案 A（15 指标）、B-small（wout24 辅助头）、C（跨 Nfp 预训练 → Nfp=3 微调） |
-| **诊断** | 距离–偏差曲线、约束违反地板、VMEC 成功率、随机预筛分位数 |
+| **诊断** | 距离–偏差曲线、约束违反下界、VMEC 成功率、随机预筛分位数 |
 | **对外材料** | 中文报告、HTML 汇报、3 张最终图 |
 
 ### 主要结论（有范围限定）
@@ -78,7 +78,7 @@ VMEC++ 平衡求解成本过高，不宜直接嵌入大规模自由搜索内环�
 ### 代理模型
 
 - **输入：** 固定 `(m,n)` 顺序的自由 Fourier 边界系数，按训练集标准化。
-- **输出头（随赛道）：** Problem 2 的 6 个物理指标；连续
+- **输出头（因方法而异）：** Problem 2 的 6 个物理指标；连续
   `max_normalized_violation`；可选更多 default 指标（15 指标方案）；可选 24 维
   wout 派生辅助标签（仅训练）。
 - **结构：** 残差 MLP 集成（4 成员）、多任务回归、成员分歧作不确定性。
@@ -121,8 +121,8 @@ VMEC++ 平衡求解成本过高，不宜直接嵌入大规模自由搜索内环�
 - **CMA-ES / NGOpt：** 无导数连续优化器，查询代理得分。
 - **PCA / GMM：** 把候选约束在数据支撑几何与松弛种子附近。
 - **信任域：** 集成不确定性 + 训练/种子距离 + 谱合法性。
-- **surrogate arbitrage：** 优化器挖掘训练边界处的系统性乐观误差——需测量，
-  不可默认。
+- **代理乐观利用（surrogate arbitrage）：** 优化器在训练支撑边界处系统性地
+  利用代理的乐观预测误差。本项目用审计诊断测量这一行为，并不将其作为默认前提。
 
 ## 报告、汇报与图
 
@@ -137,7 +137,7 @@ VMEC++ 平衡求解成本过高，不宜直接嵌入大规模自由搜索内环�
 
 ![代理有效性边界](figures/final-negative-result/fig1_surrogate_validity_boundary.png)
 
-![约束地板](figures/final-negative-result/fig2_constraint_floor_positive_violation.png)
+![约束违反下界](figures/final-negative-result/fig2_constraint_floor_positive_violation.png)
 
 ![模型方案对比](figures/scheme-comparison/fig3_model_scheme_comparison.png)
 
@@ -153,7 +153,7 @@ VMEC++ 平衡求解成本过高，不宜直接嵌入大规模自由搜索内环�
 | [公开结果文件](https://huggingface.co/datasets/proxima-fusion/constellaration-bench-results) | 提交边界的 `boundary_json` |
 | 论文 ALM-NGOpt 基线 | 论文低阶设定下的在线物理优化参考 |
 
-### Fourier 维度：两条评价赛道
+### Fourier 维度：两种评价设定
 
 官方数据集与论文 Problem 2 基线使用 **低阶** stellarator 对称 Fourier 边界，
 极向/环向截断为 `m,n ≤ 4`，自由设计维数约 **80**。本仓库主线的代理训练、
@@ -182,8 +182,8 @@ E0–E3 搜索、Stage 2–4A 以及方案 A/B/C 均在该 **官方空间（offi
 - 论文 ALM-NGOpt 在论文低阶 Fourier 设定下，以**在线**物理优化报告可行
   Problem 2 得分，算力预算较大。
 - 本仓库研究的是：在**公开低阶 Nfp=3 数据**上的**固定预算离线代理搜索**。
-  有效性边界、约束地板、随机预筛对照等诊断均针对该赛道。
-- 扩展模式榜单实践是**独立赛道**：高模最终边界不并入本仓库官方空间的方法
+  有效性边界、约束违反下界、随机预筛对照等诊断均针对该设定。
+- 扩展模式榜单实践属于**独立设定**：高模最终边界不并入本仓库官方空间的方法
   对比。若要对齐扩展空间榜单得分，需要单独的扩展空间实验设计。
 
 **排行榜问题：** 在已提交且经官方审计的边界中，谁的官方得分最高？  
@@ -198,7 +198,7 @@ E0–E3 搜索、Stage 2–4A 以及方案 A/B/C 均在该 **官方空间（offi
 │   ├── official_space/
 │   │   ├── stage1_base/                # 基础 6/15 指标流水线（E0–E3）
 │   │   ├── stage2_latent/              # 潜空间可行性搜索
-│   │   ├── stage3_trust_region/        # 套利 / 信任域诊断
+│   │   ├── stage3_trust_region/        # 信任域 / 代理乐观诊断
 │   │   └── stage4_alm_prescreen/       # 代理 ALM/NGOpt 预筛 + 对照
 │   ├── auxiliary_supervision/wout24/   # 方案 B-small
 │   ├── transfer/cross_nfp/
@@ -271,7 +271,7 @@ python 06_analyze_results.py --config configs/quick.yaml
 后续阶段消费前序本地输出。完整脚本地图见
 [`docs/SCRIPT_CATALOG.md`](docs/SCRIPT_CATALOG.md)。
 
-## 方法学赛道（目录对应）
+## 方法路线（目录对应）
 
 - **官方空间：** 低阶 Fourier 基准空间与对齐的审计预算。
 - **潜空间 / 信任域：** PCA 支撑、距离、不确定性、谱检查。
@@ -301,7 +301,7 @@ python 06_analyze_results.py --config configs/quick.yaml
 4. 统计每一个 attempted 审计槽位，包括求解失败。
 5. 代理预测与官方物理分字段报告。
 6. 在同一 Fourier 空间与同一审计预算下比较方法。
-7. 扩展 Fourier 参数化作为独立赛道单独报告。
+7. 扩展 Fourier 参数化作为独立设定单独报告。
 
 ## 引用
 
