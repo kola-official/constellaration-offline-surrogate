@@ -1,0 +1,47 @@
+{
+  "source": "https://huggingface.co/datasets/proxima-fusion/constellaration-bench-results",
+  "note": "Public submission metadata only: Fourier array shapes inferred from boundary_json r_cos/z_sin. No coefficient values are stored.",
+  "snapshot": "2026-07",
+  "rows": [
+    {
+      "problem_type": "simple_to_build",
+      "user": "scadena-pf",
+      "score": 0.4307230550411947,
+      "r_cos_shape": [5, 9],
+      "z_sin_shape": [5, 9],
+      "file": "simple_to_build/2025-07-02T06-59-39_like_baseline_row"
+    },
+    {
+      "problem_type": "simple_to_build",
+      "user": "davidkh",
+      "score": 0.6360777421951662,
+      "r_cos_shape": [8, 15],
+      "z_sin_shape": [8, 15],
+      "file": "simple_to_build/2026-07-10T17-20-55.306560_simple_to_build_results.json"
+    },
+    {
+      "problem_type": "simple_to_build",
+      "user": "phanerozoic",
+      "score": 0.6283922547583076,
+      "r_cos_shape": [11, 21],
+      "z_sin_shape": [11, 21],
+      "file": "simple_to_build/2026-05-10T13-06-11.863962_simple_to_build_results.json"
+    },
+    {
+      "problem_type": "simple_to_build",
+      "user": "RisoLiao",
+      "score": 0.6236058773032653,
+      "r_cos_shape": [11, 21],
+      "z_sin_shape": [11, 21],
+      "file": "simple_to_build/2026-04-27T01-33-12.139064_simple_to_build_results.json"
+    },
+    {
+      "problem_type": "geometrical",
+      "user": "davidkh",
+      "score": 0.9771342881670401,
+      "r_cos_shape": [9, 17],
+      "z_sin_shape": [9, 17],
+      "file": "geometrical/2026-07-05T04-26-59.871574_geometrical_results.json"
+    }
+  ]
+}

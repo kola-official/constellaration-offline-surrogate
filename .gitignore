@@ -87,3 +87,6 @@ experiments/hf_config_screening/outputs/
 *.nc
 *.h5
 *.hdf5
+# Small public test fixtures (shapes/metadata only)
+!tests/fixtures/
+!tests/fixtures/**/*.json
