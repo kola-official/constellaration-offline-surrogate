@@ -168,26 +168,59 @@ This repository builds on the official ConStellaration ecosystem.
 
 | Resource | Role here |
 |---|---|
-| [Dataset](https://huggingface.co/datasets/proxima-fusion/constellaration) | Offline training and diagnostics |
+| [Dataset](https://huggingface.co/datasets/proxima-fusion/constellaration) | Offline training and diagnostics (published low-order QI-like boundaries) |
 | [Code / forward model](https://github.com/proximafusion/constellaration) | Problem definition, scoring, audit APIs |
-| [Design leaderboard](https://huggingface.co/spaces/proxima-fusion/constellaration-bench) | Public ranking of audited boundaries and scores |
-| Paper ALM-NGOpt baseline | External **online** physics optimization reference |
+| [Design leaderboard](https://huggingface.co/spaces/proxima-fusion/constellaration-bench) | Public ranking of audited final boundaries and scores |
+| [Public result files](https://huggingface.co/datasets/proxima-fusion/constellaration-bench-results) | Stored `boundary_json` for submitted surfaces |
+| Paper ALM-NGOpt baseline | Online physics optimization reference in the paper’s low-order setting |
 
-- Official evaluation is authoritative. Surrogate values are predictions; VMEC++
-  values are audited physics quantities.
-- Leaderboard rows establish the **final audited boundary and score**. Public
-  tables omit each submitter’s search history and VMEC++ call count. This project
-  leaves private trajectories out of scope.
-- Paper ALM-NGOpt optimizes **with physics in the loop** under a large budget.
-  This work uses **offline surrogate search + fixed local audit budget**. Budget
-  and evaluation flow differ between the two protocols.
-- This project contributes method-level diagnostics of when offline surrogate
-  ranking is reliable under the stated offline protocol.
+### Fourier dimension: two evaluation tracks
 
-**Leaderboard question:** which audited boundary scores best under the official
-metric?  
-**This repository’s question:** what can a fixed-budget offline surrogate
-pipeline learn—and fail to learn—from the published data alone?
+The official dataset and the paper’s Problem 2 baseline use a **low-order**
+stellarator-symmetric Fourier boundary with poloidal/toroidal mode cutoffs
+`m,n ≤ 4`. Free design dimension is about **80**. This repository’s mainline
+surrogate training, E0–E3 search, Stages 2–4A, and schemes A/B/C all stay on
+that **official-space** support.
+
+Public leaderboard result files for `simple_to_build` (Problem 2) show that many
+**high-score** final boundaries use **expanded** Fourier arrays:
+
+| Observed `r_cos` / `z_sin` shape | Mode cutoffs (approx.) | Role on the public board |
+|---|---|---|
+| `(5, 9)` | `m,n ≤ 4` | Same low-order class as the published dataset and this repo’s mainline |
+| `(8, 15)` | `m,n ≤ 7` | Expanded-space submissions; several strong scores |
+| `(11, 21)` | `m,n ≤ 10` | Further expanded-space submissions among top scores |
+
+Measured from public rows in
+`proxima-fusion/constellaration-bench-results` (July 2026 snapshot). Example:
+top `simple_to_build` scores in that sample sit on expanded shapes such as
+`(8, 15)` or `(11, 21)`, while feasible low-order `(5, 9)` scores also appear at
+lower ranks. Expanded modes are accepted by the official evaluator when the
+submitted boundary is a valid Fourier surface; they define a **different design
+space** from the published 80-D training corpus.
+
+### How this project sits relative to the board
+
+- Official evaluation remains the score authority. Surrogate outputs are
+  predictions; VMEC++ / forward-model outputs are audited physics quantities.
+- Leaderboard rows publish the **final audited boundary and score**. Search
+  history and VMEC++ call counts are not published with those rows.
+- Paper ALM-NGOpt reports a feasible Problem 2 score under **online** physics
+  optimization in the paper’s low-order Fourier setting, with a large compute
+  budget.
+- This repository studies **fixed-budget offline surrogate search on the
+  published low-order Nfp=3 data**. Its diagnostics (validity boundary,
+  constraint floor, random-prescreen controls) apply to that track.
+- Expanded-mode leaderboard practice is an **independent track**: higher-mode
+  final boundaries are not mixed into this repo’s official-space method
+  comparisons. Matching or ranking against expanded-space board scores requires
+  an expanded-space experiment design of its own.
+
+**Leaderboard question:** among submitted (and audited) boundaries, which score
+is highest under the official metric?  
+**This repository’s question:** on the published low-order data alone, with a
+fixed offline audit budget, what can a surrogate pipeline learn, and where does
+it fail?
 
 ## Repository layout
 

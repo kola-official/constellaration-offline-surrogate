@@ -93,8 +93,12 @@ score.
 - A high surrogate score is not evidence of physical feasibility.
 - A lower audited violation is not evidence of superiority unless the search
   space and VMEC++ budget are matched.
-- Additional Fourier modes define an expanded-space track and must not be mixed
-  with official-space baseline comparisons.
+- Additional Fourier modes define an expanded-space track. Public design-board
+  result files include high-score `simple_to_build` boundaries with `r_cos` /
+  `z_sin` shapes such as `(8, 15)` (`m,n ≤ 7`) and `(11, 21)` (`m,n ≤ 10`),
+  above the dataset/paper low-order `(5, 9)` (`m,n ≤ 4`, ~80 DOF) used by this
+  repository’s mainline. Expanded-space scores stay on a separate track from
+  official-space method comparisons.
 - Ensemble variance and nearest-neighbor distance are diagnostics, not formal
   guarantees of in-distribution behavior.
 - Negative results should identify the evaluated model class, data support, and
