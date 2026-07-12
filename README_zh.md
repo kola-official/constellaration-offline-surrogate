@@ -1,6 +1,6 @@
 # 面向 ConStellaration Problem 2 的离线代理引导搜索
 
-**作者：Shengnian Liu（刘盛年）**
+**作者：Shengnian Liu**
 
 [English](README.md) | [中文](README_zh.md)
 
